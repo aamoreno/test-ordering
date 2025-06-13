@@ -1,2 +1,3 @@
 com\example\ordering\service\OrderServiceTest.class
+com\example\ordering\config\TestConfig.class
 com\example\ordering\controller\OrderControllerTest.class

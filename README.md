@@ -7,7 +7,7 @@ A Spring Boot application for managing orders.
 - Java 21
 - Spring Boot 3.2.3
 - Spring Data JPA
-- H2 Database
+- MySQL Database
 - Maven
 
 ## Features
@@ -16,7 +16,7 @@ A Spring Boot application for managing orders.
 - CRUD operations for orders
 - Filter orders by customer and status
 - Data validation
-- In-memory H2 database for development
+- MySQL database with persistent storage
 
 ## Getting Started
 
@@ -24,6 +24,7 @@ A Spring Boot application for managing orders.
 
 - Java 21
 - Maven
+- MySQL Server
 
 ### Running the Application
 
@@ -33,18 +34,23 @@ A Spring Boot application for managing orders.
    cd test-ordering
    ```
 
-2. Build the application:
+2. Set up MySQL:
+   - Ensure MySQL server is running
+   - The application will automatically create a database called 'orders'
+   - Default credentials (root with no password) are used in the sample config
+   - To use different credentials, update `application.properties`
+
+3. Build the application:
    ```
    mvn clean install
    ```
 
-3. Run the application:
+4. Run the application:
    ```
    mvn spring-boot:run
    ```
 
 4. The application will be available at `http://localhost:8080`
-   - H2 Console: `http://localhost:8080/h2-console`
    - API Endpoint: `http://localhost:8080/api/orders`
 
 ## API Endpoints

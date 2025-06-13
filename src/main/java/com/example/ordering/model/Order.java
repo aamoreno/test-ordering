@@ -12,7 +12,7 @@ import jakarta.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "t_orders")
 public class Order {
     
     @Id
