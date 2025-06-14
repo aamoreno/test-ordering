@@ -22,6 +22,7 @@ public class OrderMapper {
         dto.setQuantity(order.getQuantity());
         dto.setStatus(order.getStatus());
         dto.setOrderDate(order.getOrderDate());
+        dto.setTrackingNumber(order.getTrackingNumber());
         return dto;
     }
     
@@ -41,6 +42,7 @@ public class OrderMapper {
         order.setCustomerId(dto.getCustomerId());
         order.setProductId(dto.getProductId());
         order.setQuantity(dto.getQuantity());
+        order.setTrackingNumber(dto.getTrackingNumber());
         
         if (dto.getStatus() != null) {
             order.setStatus(dto.getStatus());
@@ -76,6 +78,10 @@ public class OrderMapper {
         
         if (dto.getOrderDate() != null) {
             order.setOrderDate(dto.getOrderDate());
+        }
+
+        if (dto.getTrackingNumber() != null) {
+            order.setTrackingNumber(dto.getTrackingNumber());
         }
     }
 }

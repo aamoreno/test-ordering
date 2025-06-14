@@ -23,6 +23,8 @@ public class OrderDto {
     private String status;
     
     private LocalDateTime orderDate;
+
+    private String trackingNumber;
     
     // Constructors
     public OrderDto() {
@@ -84,5 +86,13 @@ public class OrderDto {
     
     public void setOrderDate(LocalDateTime orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public String getTrackingNumber() {
+        return trackingNumber;
+    }
+    
+    public void setTrackingNumber(String trackingNumber) {
+        this.trackingNumber = trackingNumber;
     }
 }

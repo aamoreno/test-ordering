@@ -84,14 +84,7 @@ public class OrderService {
                     existingOrder.setProductId(orderDetails.getProductId());
                     existingOrder.setQuantity(orderDetails.getQuantity());
                     existingOrder.setStatus(orderDetails.getStatus());
-                    return orderRepository.save(existingOrder);
-                });
-    }
-
-    public Optional<Order> cancelOrder(Long id) {
-        return orderRepository.findById(id)
-                .map(existingOrder -> {
-                    existingOrder.setStatus("CANCELLED");
+                    existingOrder.setTrackingNumber(orderDetails.getTrackingNumber());
                     return orderRepository.save(existingOrder);
                 });
     }

@@ -33,6 +33,8 @@ public class Order {
     
     private String status = "PENDING";
     
+    private String trackingNumber;
+    
     // Constructors
     public Order() {
     }
@@ -44,6 +46,16 @@ public class Order {
         this.quantity = quantity;
         this.orderDate = orderDate;
         this.status = status;
+    }
+    
+    public Order(Long id, String customerId, String productId, Integer quantity, LocalDateTime orderDate, String status, String trackingNumber) {
+        this.id = id;
+        this.customerId = customerId;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.orderDate = orderDate;
+        this.status = status;
+        this.trackingNumber = trackingNumber;
     }
     
     // Getters and Setters
@@ -93,5 +105,13 @@ public class Order {
     
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    public String getTrackingNumber() {
+        return trackingNumber;
+    }
+    
+    public void setTrackingNumber(String trackingNumber) {
+        this.trackingNumber = trackingNumber;
     }
 }
