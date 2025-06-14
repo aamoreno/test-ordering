@@ -8,26 +8,33 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class OrderServiceTest {
-
+public class OrderServiceTest {    
+    
     @Mock
     private OrderRepository orderRepository;
+    
+    @Mock
+    private RestTemplate restTemplate;
 
     @InjectMocks
     private OrderService orderService;
 
-    private Order testOrder;
-
+    private Order testOrder;   
+    
     @BeforeEach
     void setUp() {
         testOrder = new Order();
@@ -36,6 +43,11 @@ public class OrderServiceTest {
         testOrder.setProductId("product456");
         testOrder.setQuantity(2);
         testOrder.setStatus("PENDING");
+        
+        // Set the mocked RestTemplate into the service
+        ReflectionTestUtils.setField(orderService, "restTemplate", restTemplate);
+        // Set a test URL for the shipping service
+        ReflectionTestUtils.setField(orderService, "shippingServiceUrl", "http://test-shipping-service");
     }
 
     @Test
@@ -69,12 +81,17 @@ public class OrderServiceTest {
         assertTrue(foundOrder.isPresent());
         assertEquals(testOrder, foundOrder.get());
         verify(orderRepository, times(1)).findById(1L);
-    }
-
+    }    
+    
     @Test
     void testCreateOrder() {
         // Given
         when(orderRepository.save(any(Order.class))).thenReturn(testOrder);
+        when(restTemplate.postForObject(
+                eq("http://test-shipping-service/api/shipments"),
+                any(),
+                eq(Object.class)
+        )).thenReturn(new Object()); // Return a dummy response
 
         // When
         Order createdOrder = orderService.createOrder(testOrder);
@@ -82,7 +99,45 @@ public class OrderServiceTest {
         // Then
         assertNotNull(createdOrder);
         assertEquals(testOrder, createdOrder);
+        
+        // Verify repository was called to save the order
         verify(orderRepository, times(1)).save(testOrder);
+        
+        // Verify RestTemplate was called to create the shipment
+        verify(restTemplate, times(1)).postForObject(
+                eq("http://test-shipping-service/api/shipments"),
+                any(),
+                eq(Object.class)
+        );
+    }
+    
+    @Test
+    void testCreateOrder_ShipmentCreationFails() {
+        // Given
+        when(orderRepository.save(any(Order.class))).thenReturn(testOrder);
+        when(restTemplate.postForObject(
+                eq("http://test-shipping-service/api/shipments"),
+                any(),
+                eq(Object.class)
+        )).thenThrow(new RuntimeException("Service unavailable"));
+
+        // When
+        Order createdOrder = orderService.createOrder(testOrder);
+
+        // Then
+        // The order should still be created even if shipment creation fails
+        assertNotNull(createdOrder);
+        assertEquals(testOrder, createdOrder);
+        
+        // Verify repository was called to save the order
+        verify(orderRepository, times(1)).save(testOrder);
+        
+        // Verify RestTemplate was called to create the shipment
+        verify(restTemplate, times(1)).postForObject(
+                eq("http://test-shipping-service/api/shipments"),
+                any(),
+                eq(Object.class)
+        );
     }
 
     @Test

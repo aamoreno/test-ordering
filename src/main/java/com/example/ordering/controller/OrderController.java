@@ -39,25 +39,7 @@ public class OrderController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
-    @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<OrderDto>> getOrdersByCustomerId(@PathVariable String customerId) {
-        List<Order> orders = orderService.getOrdersByCustomerId(customerId);
-        if (orders.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(orderMapper.toDtoList(orders));
-    }
-
-    @GetMapping("/status/{status}")
-    public ResponseEntity<List<OrderDto>> getOrdersByStatus(@PathVariable String status) {
-        List<Order> orders = orderService.getOrdersByStatus(status);
-        if (orders.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(orderMapper.toDtoList(orders));
-    }    
-    
+ 
     @PostMapping
     public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody OrderDto orderDto) {
         Order order = orderMapper.toEntity(orderDto);
@@ -73,15 +55,6 @@ public class OrderController {
                     orderMapper.updateEntityFromDto(orderDto, existingOrder);
                     Order savedOrder = orderService.updateOrder(id, existingOrder).orElse(null);
                     return ResponseEntity.ok(orderMapper.toDto(savedOrder));
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-    
-    @PutMapping("cancel/{id}")
-    public ResponseEntity<OrderDto> cancelOrder(@PathVariable Long id) {
-        return orderService.cancelOrder(id)
-                .map(updatedOrder -> {
-                    return ResponseEntity.ok(orderMapper.toDto(updatedOrder));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
