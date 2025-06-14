@@ -2,20 +2,29 @@ package com.example.ordering.service;
 
 import com.example.ordering.model.Order;
 import com.example.ordering.repository.OrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class OrderService {
 
-    private final OrderRepository orderRepository;
+    private final OrderRepository orderRepository;    private final RestTemplate restTemplate;
+    
+    @Value("${shipping.service.url:http://localhost:8081}")
+    private String shippingServiceUrl;
 
-    @Autowired
     public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
+        this.restTemplate = new RestTemplate();
     }
 
     public List<Order> getAllOrders() {
@@ -35,7 +44,38 @@ public class OrderService {
     }
 
     public Order createOrder(Order order) {
-        return orderRepository.save(order);
+        // Save the order first
+        Order savedOrder = orderRepository.save(order);
+        
+        // Create a shipment for the order
+        try {
+            createShipment(savedOrder);
+        } catch (Exception e) {
+            // Log the error but don't fail the order creation
+            System.err.println("Failed to create shipment for order " + savedOrder.getId() + ": " + e.getMessage());
+        }
+        
+        return savedOrder;
+    }
+
+    private void createShipment(Order order) {
+        String url = shippingServiceUrl + "/api/shipments";
+        
+        // Create the request payload for the shipping service
+        Map<String, Object> shipmentRequest = new HashMap<>();
+        shipmentRequest.put("orderId", order.getId());
+        shipmentRequest.put("customerId", order.getCustomerId());
+        shipmentRequest.put("status", "WAITING_FOR_SHIPMENT");
+        
+        // Set headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        
+        // Create the HTTP entity with headers and body
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(shipmentRequest, headers);
+        
+        // Send the request to create a shipment
+        restTemplate.postForObject(url, requestEntity, Object.class);
     }
 
     public Optional<Order> updateOrder(Long id, Order orderDetails) {

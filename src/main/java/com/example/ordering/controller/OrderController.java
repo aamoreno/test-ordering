@@ -67,11 +67,12 @@ public class OrderController {
 
     @PutMapping("/{id}")
     public ResponseEntity<OrderDto> updateOrder(@PathVariable Long id, @Valid @RequestBody OrderDto orderDto) {
-        return orderService.getOrderById(id)
+        Order orderDetails = orderMapper.toEntity(orderDto);
+        return orderService.updateOrder(id, orderDetails)
                 .map(existingOrder -> {
                     orderMapper.updateEntityFromDto(orderDto, existingOrder);
-                    Order updatedOrder = orderService.createOrder(existingOrder);
-                    return ResponseEntity.ok(orderMapper.toDto(updatedOrder));
+                    Order savedOrder = orderService.updateOrder(id, existingOrder).orElse(null);
+                    return ResponseEntity.ok(orderMapper.toDto(savedOrder));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

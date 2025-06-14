@@ -98,7 +98,7 @@ public class WebController {
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
             orderMapper.updateEntityFromDto(orderDto, order);
-            orderService.createOrder(order);
+            orderService.updateOrder(id, order);
             redirectAttributes.addFlashAttribute("successMessage", "Order updated successfully!");
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "Order not found!");
