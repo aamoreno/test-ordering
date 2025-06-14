@@ -50,15 +50,13 @@ A Spring Boot application for managing orders.
    mvn spring-boot:run
    ```
 
-4. The application will be available at `http://localhost:8080`
+5. The application will be available at `http://localhost:8080`
    - API Endpoint: `http://localhost:8080/api/orders`
 
 ## API Endpoints
 
 - `GET /api/orders` - Get all orders
 - `GET /api/orders/{id}` - Get order by ID
-- `GET /api/orders/customer/{customerId}` - Get orders by customer ID
-- `GET /api/orders/status/{status}` - Get orders by status
 - `POST /api/orders` - Create a new order
 - `PUT /api/orders/{id}` - Update an order
 - `DELETE /api/orders/{id}` - Delete an order
